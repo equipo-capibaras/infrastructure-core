@@ -147,7 +147,7 @@ resource "google_compute_managed_ssl_certificate" "default" {
 
 resource "google_compute_ssl_policy" "default" {
   name            = "lb-ssl-policy"
-  profile         = "COMPATIBLE"
+  profile         = "MODERN"
   min_tls_version = "TLS_1_2"
 
   depends_on = [ google_project_service.compute ]
