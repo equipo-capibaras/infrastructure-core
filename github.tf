@@ -28,7 +28,7 @@ resource "google_iam_workload_identity_pool_provider" "github" {
   }
 }
 
-/*resource "google_storage_bucket_iam_member" "github_front_read" {
+resource "google_storage_bucket_iam_member" "github_front_read" {
   bucket = google_storage_bucket.front.name
   role   = "roles/storage.legacyBucketReader"
   member = google_service_account.github.member
@@ -44,4 +44,4 @@ resource "google_project_iam_member" "github_cache" {
   project = local.project_id
   role    = google_project_iam_custom_role.cache_controller.id
   member  = google_service_account.github.member
-}*/
+}
