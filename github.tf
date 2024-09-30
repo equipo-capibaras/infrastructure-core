@@ -1,3 +1,10 @@
+resource "google_service_account" "github" {
+  account_id   = "github"
+  display_name = "Service Account GitHub"
+
+  depends_on = [ google_project_service.iam ]
+}
+
 resource "google_service_account_iam_member" "workload_identity_github" {
   service_account_id = google_service_account.github.name
   role               = "roles/iam.workloadIdentityUser"
@@ -26,22 +33,4 @@ resource "google_iam_workload_identity_pool_provider" "github" {
   oidc {
     issuer_uri = "https://token.actions.githubusercontent.com"
   }
-}
-
-resource "google_storage_bucket_iam_member" "github_front_read" {
-  bucket = google_storage_bucket.front.name
-  role   = "roles/storage.legacyBucketReader"
-  member = google_service_account.github.member
-}
-
-resource "google_storage_bucket_iam_member" "github_front_write" {
-  bucket = google_storage_bucket.front.name
-  role   = "roles/storage.objectUser"
-  member = google_service_account.github.member
-}
-
-resource "google_project_iam_member" "github_cache" {
-  project = local.project_id
-  role    = google_project_iam_custom_role.cache_controller.id
-  member  = google_service_account.github.member
 }

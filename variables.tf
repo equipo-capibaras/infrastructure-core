@@ -26,6 +26,11 @@ variable "github_org_id" {
   description = "GitHub Organization ID"
 }
 
+variable "circleci_org_id" {
+  type        = string
+  description = "CircleCI Organization ID"
+}
+
 variable "domain" {
   type        = string
   description = "Domain name"
