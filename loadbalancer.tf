@@ -36,6 +36,8 @@ resource "google_project_iam_custom_role" "cache_controller" {
   role_id     = "lbCacheControl"
   title       = "Load Balancer Cache Controller"
   permissions = [ "compute.urlMaps.invalidateCache" ]
+
+  depends_on = [ google_project_service.iam ]
 }
 
 resource "google_storage_bucket" "jwks" {
