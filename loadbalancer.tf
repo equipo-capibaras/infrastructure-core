@@ -10,6 +10,29 @@ resource "google_project_service" "compute" {
   disable_on_destroy = false
 }
 
+resource "google_compute_region_network_endpoint_group" "apigw" {
+  provider              = google-beta
+  name                  = "neg-apigw"
+  network_endpoint_type = "SERVERLESS"
+  region                = local.region
+
+  serverless_deployment {
+    platform = "apigateway.googleapis.com"
+    resource = google_api_gateway_gateway.default.gateway_id
+  }
+}
+
+resource "google_compute_backend_service" "api" {
+  name                  = "backend-api"
+  load_balancing_scheme = "EXTERNAL_MANAGED"
+  protocol              = "HTTP"
+  port_name             = "http"
+
+  backend {
+    group = google_compute_region_network_endpoint_group.apigw.id
+  }
+}
+
 resource "google_storage_bucket" "front" {
   name                        = "${local.project_id}-front"
   location                    = local.region
@@ -108,6 +131,19 @@ resource "google_compute_url_map" "default" {
 
     route_rules {
       priority = 3
+      service = google_compute_backend_service.api.self_link
+
+      match_rules {
+        full_path_match =  "/api"
+      }
+
+      match_rules {
+        prefix_match =  "/api/"
+      }
+    }
+
+    route_rules {
+      priority = 4
       service = google_compute_backend_bucket.front.id
 
       match_rules {
