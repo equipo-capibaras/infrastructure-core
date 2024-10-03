@@ -98,7 +98,7 @@ paths:
           in: query
           description: Set to true to load demo data, false otherwise.
           required: false
-          type: bool
+          type: boolean
           x-example: true
       responses:
         '200':
