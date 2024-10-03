@@ -1,0 +1,146 @@
+info:
+  title: ABCall
+  description: ''
+  version: 1.0.0
+tags: []
+basePath: /api
+paths:
+  /v1/health/client:
+    get:
+      summary: Health check
+      deprecated: false
+      description: ''
+      operationId: healthClient
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: Status
+            required:
+              - status
+      security: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/auth/employee:
+    post:
+      summary: Authenticate employee
+      deprecated: false
+      description: >-
+        Authenticates an employee (administrator, analyst, or agent) and
+        generates an authentication token for subsequent API requests.
+      operationId: authEmployee
+      tags: []
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+                description: The employee's username.
+              password:
+                type: string
+                description: The employee's password.
+            required:
+              - username
+              - password
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+            required:
+              - token
+        '400':
+          description: ''
+          headers: {}
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: ''
+          headers: {}
+          schema:
+            $ref: '#/definitions/Error'
+      security: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/reset/client:
+    post:
+      summary: Reset database
+      deprecated: false
+      description: Reset database and optionally load demo data.
+      operationId: resetClient
+      tags: []
+      parameters:
+        - name: demo
+          in: query
+          description: Set to "1" to load demo data, otherwise no demo data is loaded.
+          required: false
+          type: string
+          x-example: '1'
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: status
+            required:
+              - status
+      security:
+        - tokenDeveloper: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+swagger: '2.0'
+definitions:
+  Error:
+    type: object
+    properties:
+      message:
+        type: string
+      code:
+        type: number
+    required:
+      - message
+      - code
+securityDefinitions:
+  tokenDeveloper:
+    authorizationUrl: ""
+    flow: "implicit"
+    type: "oauth2"
+    x-google-issuer: "${jwt_issuer}"
+    x-google-jwks_uri: "${jwt_jwks}"
+    x-google-jwt-locations:
+    - header: "Authorization"
+      value_prefix: "Bearer "
+    x-google-audiences: "developer"
+x-components: {}
