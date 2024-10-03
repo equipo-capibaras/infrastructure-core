@@ -96,10 +96,10 @@ paths:
       parameters:
         - name: demo
           in: query
-          description: Set to "1" to load demo data, otherwise no demo data is loaded.
+          description: Set to true to load demo data, false otherwise.
           required: false
-          type: string
-          x-example: '1'
+          type: bool
+          x-example: true
       responses:
         '200':
           description: ''
