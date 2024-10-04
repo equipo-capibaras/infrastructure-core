@@ -55,3 +55,20 @@ resource "google_artifact_registry_repository_iam_member" "circleci_repo_access"
   role   = "roles/artifactregistry.writer"
   member = google_service_account.circleci.member
 }
+
+resource "google_project_iam_custom_role" "cloud_run_deployer" {
+  role_id     = "cloudRunDeployer"
+  title       = "Cloud Run Deployer"
+  permissions = [
+    "run.services.get",
+    "run.services.update",
+]
+
+  depends_on = [ google_project_service.iam ]
+}
+
+resource "google_project_iam_member" "cloud_run_deployer" {
+  project = local.project_id
+  role    = google_project_iam_custom_role.cloud_run_deployer.id
+  member  = google_service_account.circleci.member
+}
