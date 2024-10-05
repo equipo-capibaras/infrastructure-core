@@ -9,6 +9,11 @@ variable "gcp_project_id" {
   description = "GCP project ID"
 }
 
+variable "tfstate_bucket" {
+  type        = string
+  description = "Bucket to store terraform state"
+}
+
 variable "registry_id" {
   type        = string
   default     = "repo"
@@ -29,6 +34,16 @@ variable "github_org_id" {
 variable "circleci_org_id" {
   type        = string
   description = "CircleCI Organization ID"
+}
+
+variable "circleci_context_id" {
+  type        = string
+  description = "CircleCI Context ID that can use the circleci service account"
+}
+
+variable "circlecitf_context_id" {
+  type        = string
+  description = "CircleCI Context ID that can use the circlecitf service account"
 }
 
 variable "domain" {
