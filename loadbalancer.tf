@@ -152,7 +152,7 @@ resource "google_compute_url_map" "default" {
 
       route_action {
         url_rewrite {
-          path_template_rewrite = "/index.html"
+          path_template_rewrite = "/index2.html"
         }
       }
     }
