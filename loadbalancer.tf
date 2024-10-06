@@ -114,23 +114,6 @@ resource "google_compute_url_map" "default" {
 
     route_rules {
       priority = 2
-      service = google_compute_backend_bucket.front.id
-
-      match_rules {
-        full_path_match =  "/static"
-      }
-
-      match_rules {
-        prefix_match =  "/static/"
-      }
-
-      match_rules {
-        full_path_match =  "/favicon.ico"
-      }
-    }
-
-    route_rules {
-      priority = 3
       service = google_compute_backend_service.api.self_link
 
       match_rules {
@@ -143,7 +126,70 @@ resource "google_compute_url_map" "default" {
     }
 
     route_rules {
+      priority = 3
+      service = google_compute_backend_bucket.front.id
+
+      match_rules {
+        full_path_match =  "/es-CO/static"
+      }
+
+      match_rules {
+        prefix_match =  "/es-CO/static/"
+      }
+
+      match_rules {
+        full_path_match =  "/pt-BR/static"
+      }
+
+      match_rules {
+        prefix_match =  "/pt-BR/static/"
+      }
+
+      match_rules {
+        full_path_match =  "/favicon.ico"
+      }
+
+      match_rules {
+        full_path_match =  "/es-CO/favicon.ico"
+      }
+
+      match_rules {
+        full_path_match =  "/pt-BR/favicon.ico"
+      }
+    }
+
+    route_rules {
       priority = 4
+      service = google_compute_backend_bucket.front.id
+
+      match_rules {
+        path_template_match =  "/es-CO/**"
+      }
+
+      route_action {
+        url_rewrite {
+          path_template_rewrite = "/es-CO/index.html"
+        }
+      }
+    }
+
+    route_rules {
+      priority = 5
+      service = google_compute_backend_bucket.front.id
+
+      match_rules {
+        path_template_match =  "/pt-BR/**"
+      }
+
+      route_action {
+        url_rewrite {
+          path_template_rewrite = "/pt-BR/index.html"
+        }
+      }
+    }
+
+    route_rules {
+      priority = 6
       service = google_compute_backend_bucket.front.id
 
       match_rules {
