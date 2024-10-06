@@ -127,7 +127,7 @@ jobs:
           at: workspace
       - run:
           name: Load Terraform plan
-          command: cp workspace/tf-plan/tf.plan terraform/tf.plan
+          command: cp workspace/tf-plan/tf.plan tf.plan
       - run:
           name: Initialize Terraform
           command: terraform init -backend-config "bucket=$TF_BUCKET"
