@@ -103,9 +103,23 @@ data "google_storage_bucket" "tfstate" {
   name = local.tfstate_bucket
 }
 
-resource "google_storage_bucket_iam_member" "tfstate_read" {
-  bucket = data.google_storage_bucket.tfstate.name
+resource "google_project_iam_member" "storage_reader" {
+  project = local.project_id
   role   = "roles/storage.objectViewer"
+  member = google_service_account.circleci.member
+}
+
+resource "google_project_iam_custom_role" "storage_iam_reader" {
+  role_id     = "storageIamReader"
+  title       = "Storage IAM policy reader"
+  permissions = [ "storage.buckets.getIamPolicy" ]
+
+  depends_on = [ google_project_service.iam ]
+}
+
+resource "google_project_iam_member" "storage_iam_reader" {
+  project = local.project_id
+  role   = google_project_iam_custom_role.storage_iam_reader.id
   member = google_service_account.circleci.member
 }
 
