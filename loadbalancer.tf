@@ -125,7 +125,7 @@ resource "google_compute_url_map" "default" {
       }
 
       match_rules {
-        full_path_match =  "/favicon2.ico"
+        full_path_match =  "/favicon.ico"
       }
     }
 
