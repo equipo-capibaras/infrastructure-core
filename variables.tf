@@ -50,3 +50,8 @@ variable "domain" {
   type        = string
   description = "Domain name"
 }
+
+variable "jwt_private_key" {
+  type        = string
+  description = "JWT private key"
+}
