@@ -2,14 +2,18 @@ info:
   title: ABCall
   description: ''
   version: 1.0.0
-tags: []
+tags:
+  - name: internal
 basePath: /api
 paths:
   /v1/health/client:
     get:
       summary: Health check
       deprecated: false
-      description: ''
+      description: >-
+        This endpoint allows to check the health and availability of the
+        ClientService API endpoints. It returns a status code indicating the
+        health of the API.
       operationId: healthClient
       tags: []
       parameters: []
@@ -38,7 +42,14 @@ paths:
       deprecated: false
       description: >-
         Authenticates an employee (administrator, analyst, or agent) and
-        generates an authentication token for subsequent API requests.
+        generates a JWT authentication token for subsequent API requests.
+
+
+        - If the user is not found or the password is wrong, the API returns a
+        401 Unauthorized error.
+
+        - If the request is not valid JSON or is missing required fields, a 400
+        Bad Request error is returned.
       operationId: authEmployee
       tags: []
       parameters:
@@ -92,14 +103,15 @@ paths:
       deprecated: false
       description: Reset database and optionally load demo data.
       operationId: resetClient
-      tags: []
+      tags:
+        - internal
       parameters:
         - name: demo
           in: query
           description: Set to true to load demo data, false otherwise.
           required: false
           type: boolean
-          x-example: true
+          x-example: false
       responses:
         '200':
           description: ''
@@ -118,6 +130,132 @@ paths:
         - application/json
       x-google-backend:
         address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/health/user:
+    get:
+      summary: Health check
+      deprecated: false
+      description: >-
+        This endpoint allows to check the health and availability of the
+        UserService API endpoints. It returns a status code indicating the
+        health of the API.
+      operationId: healthUser
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: Status
+            required:
+              - status
+      security: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${user_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/auth/user:
+    post:
+      summary: Authenticate user
+      deprecated: false
+      description: >-
+        Authenticates a user (of a client) and generates a JWT authentication
+        token for subsequent API requests.
+
+
+        - If the user is not found or the password is wrong, the API returns a
+        401 Unauthorized error.
+
+        - If the request is not valid JSON or is missing required fields, a 400
+        Bad Request error is returned.
+      operationId: authUser
+      tags: []
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+                description: The user's username.
+              password:
+                type: string
+                description: The user's password.
+            required:
+              - username
+              - password
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+            required:
+              - token
+        '400':
+          description: ''
+          headers: {}
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: ''
+          headers: {}
+          schema:
+            $ref: '#/definitions/Error'
+      security: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${user_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/reset/user:
+    post:
+      summary: Reset database
+      deprecated: false
+      description: Reset database and optionally load demo data.
+      operationId: resetUser
+      tags:
+        - internal
+      parameters:
+        - name: demo
+          in: query
+          description: Set to true to load demo data, false otherwise.
+          required: false
+          type: boolean
+          x-example: false
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: status
+            required:
+              - status
+      security:
+        - tokenDeveloper: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${user_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
 swagger: '2.0'

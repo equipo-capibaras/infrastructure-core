@@ -39,6 +39,7 @@ locals {
     jwt_issuer = "https://${local.domain}"
     jwt_jwks = "https://${local.domain}/.well-known/jwks.json"
     client_url = "https://client-${data.google_project.default.number}.${local.region}.run.app"
+    user_url = "https://user-${data.google_project.default.number}.${local.region}.run.app"
   })
 }
 
