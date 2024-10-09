@@ -9,4 +9,5 @@ locals {
   circleci_context_id = var.circleci_context_id
   circlecitf_context_id = var.circlecitf_context_id
   domain = var.domain
+  jwt_private_key = var.jwt_private_key
 }
