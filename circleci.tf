@@ -134,3 +134,9 @@ resource "google_project_iam_member" "tf_storage_admin" {
   role   = "roles/storage.admin"
   member = google_service_account.circlecitf.member
 }
+
+resource "google_project_iam_member" "tf_secret_access" {
+  project = local.project_id
+  role    = "roles/secretmanager.admin"
+  member  = google_service_account.circlecitf.member
+}
