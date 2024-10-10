@@ -97,6 +97,39 @@ paths:
         address: "${client_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/clients:
+    get:
+      summary: List clients
+      deprecated: false
+      description: Returns the list of clients (companies)
+      operationId: listClients
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: ID of the client
+                name:
+                  type: string
+                  description: Name of the client
+              required:
+                - id
+                - name
+      security: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
   /v1/reset/client:
     post:
       summary: Reset database
