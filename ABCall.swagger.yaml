@@ -291,6 +291,51 @@ paths:
         address: "${user_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/users/me:
+    get:
+      summary: User info
+      deprecated: false
+      description: Returns information about the user making the request.
+      operationId: userInfo
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of the user
+              clientId:
+                type: string
+                description: ID of the associated client
+              name:
+                type: string
+                description: Name of the user
+              email:
+                type: string
+                description: Email of the user
+            required:
+              - id
+              - clientId
+              - name
+              - email
+        '404':
+          description: ''
+          headers: {}
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - tokenUser: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${user_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
 swagger: '2.0'
 definitions:
   Error:
@@ -314,4 +359,14 @@ securityDefinitions:
     - header: "Authorization"
       value_prefix: "Bearer "
     x-google-audiences: "developer"
+  tokenUser:
+    authorizationUrl: ""
+    flow: "implicit"
+    type: "oauth2"
+    x-google-issuer: "${jwt_issuer}"
+    x-google-jwks_uri: "${jwt_jwks}"
+    x-google-jwt-locations:
+    - header: "Authorization"
+      value_prefix: "Bearer "
+    x-google-audiences: "user"
 x-components: {}
