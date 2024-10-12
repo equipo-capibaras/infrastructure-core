@@ -3,7 +3,7 @@ info:
   description: ''
   version: 1.0.0
 tags:
-  - name: internal
+  - name: testing
 basePath: /api
 paths:
   /v1/health/client:
@@ -97,6 +97,81 @@ paths:
         address: "${client_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/clients:
+    get:
+      summary: List clients
+      deprecated: false
+      description: Returns the list of clients (companies)
+      operationId: listClients
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: ID of the client
+                name:
+                  type: string
+                  description: Name of the client
+              required:
+                - id
+                - name
+      security: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/clients/{clientId}:
+    get:
+      summary: Get client
+      deprecated: false
+      description: Returns the the information of a client (company)
+      operationId: getClient
+      tags: []
+      parameters:
+        - name: clientId
+          in: path
+          description: ID of the client to retrieve
+          required: true
+          type: string
+          x-example: f0d2e958-f503-462e-b0f1-911c23b2e008
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of the client
+              name:
+                type: string
+                description: Name of the client
+            required:
+              - id
+              - name
+        '404':
+          description: ''
+          headers: {}
+          schema:
+            $ref: '#/definitions/Error'
+      security: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
   /v1/reset/client:
     post:
       summary: Reset database
@@ -104,7 +179,7 @@ paths:
       description: Reset database and optionally load demo data.
       operationId: resetClient
       tags:
-        - internal
+        - testing
       parameters:
         - name: demo
           in: query
@@ -230,7 +305,7 @@ paths:
       description: Reset database and optionally load demo data.
       operationId: resetUser
       tags:
-        - internal
+        - testing
       parameters:
         - name: demo
           in: query
@@ -252,6 +327,129 @@ paths:
               - status
       security:
         - tokenDeveloper: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${user_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/users/me:
+    get:
+      summary: User info
+      deprecated: false
+      description: Returns information about the user making the request.
+      operationId: userInfo
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of the user
+              clientId:
+                type: string
+                description: ID of the associated client
+              name:
+                type: string
+                description: Name of the user
+              email:
+                type: string
+                description: Email of the user
+            required:
+              - id
+              - clientId
+              - name
+              - email
+        '401':
+          description: ''
+          headers: {}
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: ''
+          headers: {}
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - tokenUser: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${user_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/users:
+    post:
+      summary: Create user
+      deprecated: false
+      description: Creates a new user account for a client (company).
+      operationId: userCreate
+      tags: []
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              clientId:
+                type: string
+                description: ID of the associated client
+              name:
+                type: string
+                description: Name of the user
+              email:
+                type: string
+                description: Email of the user
+              password:
+                type: string
+                description: Password of the user
+            required:
+              - clientId
+              - name
+              - email
+              - password
+      responses:
+        '201':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of the user
+              clientId:
+                type: string
+                description: ID of the associated client
+              name:
+                type: string
+                description: Name of the user
+              email:
+                type: string
+                description: Email of the user
+            required:
+              - id
+              - clientId
+              - name
+              - email
+        '400':
+          description: ''
+          headers: {}
+          schema:
+            $ref: '#/definitions/Error'
+        '409':
+          description: ''
+          headers: {}
+          schema:
+            $ref: '#/definitions/Error'
+      security: []
+      consumes:
+        - application/json
       produces:
         - application/json
       x-google-backend:
@@ -281,4 +479,14 @@ securityDefinitions:
     - header: "Authorization"
       value_prefix: "Bearer "
     x-google-audiences: "developer"
+  tokenUser:
+    authorizationUrl: ""
+    flow: "implicit"
+    type: "oauth2"
+    x-google-issuer: "${jwt_issuer}"
+    x-google-jwks_uri: "${jwt_jwks}"
+    x-google-jwt-locations:
+    - header: "Authorization"
+      value_prefix: "Bearer "
+    x-google-audiences: "user"
 x-components: {}
