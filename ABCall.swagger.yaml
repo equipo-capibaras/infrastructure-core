@@ -134,7 +134,7 @@ paths:
     get:
       summary: Get client
       deprecated: false
-      description: Returns the the information of a client (company)
+      description: Returns information about a client (company)
       operationId: getClient
       tags: []
       parameters:
@@ -160,12 +160,68 @@ paths:
             required:
               - id
               - name
+        '400':
+          description: ''
+          headers: {}
+          schema:
+            $ref: '#/definitions/Error'
         '404':
           description: ''
           headers: {}
           schema:
             $ref: '#/definitions/Error'
       security: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/clients/me:
+    get:
+      summary: Info client
+      deprecated: false
+      description: >-
+        Returns information about the client (company) of the user making the
+        request.
+      operationId: infoClient
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of the client
+              name:
+                type: string
+                description: Name of the client
+              plan:
+                type: string
+                description: Plan of the client (only for admins)
+              emailIncidents:
+                type: string
+                description: Email of the client where customers can report incidents
+            required:
+              - id
+              - name
+              - emailIncidents
+        '401':
+          description: ''
+          headers: {}
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: ''
+          headers: {}
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - tokenAdmin: []
       produces:
         - application/json
       x-google-backend:
@@ -201,6 +257,61 @@ paths:
               - status
       security:
         - tokenDeveloper: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/employees/me:
+    get:
+      summary: Info employee
+      deprecated: false
+      description: Returns information about the employee making the request.
+      operationId: infoEmployee
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of the employee
+              clientId:
+                type: string
+                description: ID of the associated client
+              name:
+                type: string
+                description: Name of the employee
+              email:
+                type: string
+                description: Email of the employee
+              role:
+                type: string
+                description: Role of the employee
+            required:
+              - id
+              - clientId
+              - name
+              - email
+              - role
+        '401':
+          description: ''
+          headers: {}
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: ''
+          headers: {}
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - tokenAgent: []
+        - tokenAnalyst: []
       produces:
         - application/json
       x-google-backend:
@@ -479,6 +590,36 @@ securityDefinitions:
     - header: "Authorization"
       value_prefix: "Bearer "
     x-google-audiences: "developer"
+  tokenAdmin:
+    authorizationUrl: ""
+    flow: "implicit"
+    type: "oauth2"
+    x-google-issuer: "${jwt_issuer}"
+    x-google-jwks_uri: "${jwt_jwks}"
+    x-google-jwt-locations:
+    - header: "Authorization"
+      value_prefix: "Bearer "
+    x-google-audiences: "admin"
+  tokenAgent:
+    authorizationUrl: ""
+    flow: "implicit"
+    type: "oauth2"
+    x-google-issuer: "${jwt_issuer}"
+    x-google-jwks_uri: "${jwt_jwks}"
+    x-google-jwt-locations:
+    - header: "Authorization"
+      value_prefix: "Bearer "
+    x-google-audiences: "agent"
+  tokenAnalyst:
+    authorizationUrl: ""
+    flow: "implicit"
+    type: "oauth2"
+    x-google-issuer: "${jwt_issuer}"
+    x-google-jwks_uri: "${jwt_jwks}"
+    x-google-jwt-locations:
+    - header: "Authorization"
+      value_prefix: "Bearer "
+    x-google-audiences: "analyst"
   tokenUser:
     authorizationUrl: ""
     flow: "implicit"
