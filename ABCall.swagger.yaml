@@ -222,6 +222,8 @@ paths:
             $ref: '#/definitions/Error'
       security:
         - tokenAdmin: []
+        - tokenAgent: []
+        - tokenAnalyst: []
       produces:
         - application/json
       x-google-backend:
@@ -310,6 +312,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       security:
+        - tokenAdmin: []
         - tokenAgent: []
         - tokenAnalyst: []
       produces:
