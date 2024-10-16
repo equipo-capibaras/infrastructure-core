@@ -224,6 +224,7 @@ paths:
         - tokenAdmin: []
         - tokenAgent: []
         - tokenAnalyst: []
+        - tokenUser: []
       produces:
         - application/json
       x-google-backend:
