@@ -97,6 +97,92 @@ paths:
         address: "${client_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/employees:
+    post:
+      summary: Create employee
+      deprecated: false
+      description: >-
+        Creates a new employee without associating it with a specific client
+        initially. Employees can be administrators, analysts, or agents. 
+
+        - If the email address is already registered, the API returns a 409 Conflict error.
+        - If the request is not valid JSON or does not meet the field requirements, a 400 Bad Request error is returned.
+      operationId: employeeCreate
+      tags: [ ]
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Name of the employee.
+              email:
+                type: string
+                description: Email of the employee.
+              password:
+                type: string
+                description: Password for the employee.
+              role:
+                type: string
+                enum:
+                  - admin
+                  - analyst
+                  - agent
+                description: Role of the employee.
+            required:
+              - name
+              - email
+              - password
+              - role
+      responses:
+        '201':
+          description: Employee created successfully
+          headers: { }
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of the employee
+              clientId:
+                type: string
+                description: ID of the associated client (can be null)
+              name:
+                type: string
+                description: Name of the employee
+              email:
+                type: string
+                description: Email of the employee
+              role:
+                type: string
+                description: Role of the employee
+            required:
+              - id
+              - name
+              - email
+              - role
+        '400':
+          description: Bad request. The request body is invalid or missing required fields.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '409':
+          description: Conflict. The email address is already registered.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+      security: [ ]
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+
   /v1/clients:
     get:
       summary: List clients
