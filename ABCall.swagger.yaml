@@ -182,6 +182,113 @@ paths:
         address: "${client_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+    get:
+      summary: List employees
+      deprecated: false
+      description: >
+        Returns the paginated list of employees from a specific Client.
+
+        - If a successful request is made, a code 200 OK is returned.
+
+        - The only page_size numbers allowed are 5, 10, and 20. If a different number is sent, a code 400 BAD REQUEST is returned.
+
+        - If a page_number less than 1 is sent, a code 400 BAD REQUEST is returned.
+
+        - If a user with a role other than Administrator sends the request, a code 403 FORBIDDEN is returned.
+
+        - If the request is sent without the authorization token, a code 401 UNAUTHORIZED is returned.
+      operationId: listEmployees
+      tags: [ ]
+      parameters:
+        - name: page_size
+          in: query
+          description: Number of employees per page (Allowed values are 5, 10, 20).
+          required: false
+          type: integer
+          default: 5
+          x-example: 10
+        - name: page_number
+          in: query
+          description: The page number to retrieve (starting at 1).
+          required: false
+          type: integer
+          default: 1
+          x-example: 2
+      responses:
+        '200':
+          description: Employees list retrieved successfully
+          headers: { }
+          schema:
+            type: object
+            properties:
+              employees:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: ID of the employee
+                    clientId:
+                      type: string
+                      description: ID of the associated client
+                    name:
+                      type: string
+                      description: Name of the employee
+                    email:
+                      type: string
+                      description: Email of the employee
+                    role:
+                      type: string
+                      description: Role of the employee
+                    invitationStatus:
+                      type: string
+                      description: Invitation status of the employee
+                    invitationDate:
+                      type: string
+                      format: date-time
+                      description: Date of the invitation
+                  required:
+                    - id
+                    - clientId
+                    - name
+                    - email
+                    - role
+                    - invitationStatus
+                    - invitationDate
+              totalPages:
+                type: integer
+                description: Total number of pages
+              currentPage:
+                type: integer
+                description: Current page number
+            required:
+              - employees
+              - totalPages
+              - currentPage
+        '400':
+          description: Bad request. Invalid page_size or page_number.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Unauthorized. Missing or invalid token.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden. User does not have access to this resource.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - tokenAdmin: [ ]
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
 
   /v1/clients:
     get:
