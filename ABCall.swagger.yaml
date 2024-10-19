@@ -323,6 +323,61 @@ paths:
         address: "${client_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+    post:
+      summary: Create client
+      deprecated: false
+      description: ''
+      operationId: clientCreate
+      tags: []
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Name of the client
+              prefixEmailIncidents:
+                type: string
+                description: Prefix for the email to report incidents
+            required:
+              - name
+              - prefixEmailIncidents
+      responses:
+        '201':
+          description: Created
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of the client
+              name:
+                type: string
+                description: Name of the client
+              emailIncidents:
+                type: string
+                description: Email of the client where customers can report incidents
+              plan:
+                type: string
+                description: Plan of the client
+                x-nullable: true
+            required:
+              - id
+              - name
+              - emailIncidents
+              - plan
+      security: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+
   /v1/clients/{clientId}:
     get:
       summary: Get client
