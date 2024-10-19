@@ -479,6 +479,52 @@ paths:
         address: "${client_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+
+  /v1/clients/me/plan/{plan}:
+    post:
+      summary: Select plan
+      deprecated: false
+      description: ''
+      operationId: selectPlan
+      tags: []
+      parameters:
+        - name: plan
+          in: path
+          description: New plan (emprendedor, empresario, empresario_plus)
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of the client
+              name:
+                type: string
+                description: Name of the client
+              plan:
+                type: string
+                description: Plan of the client
+              emailIncidents:
+                type: string
+                description: Email of the client where customers can report incidents
+            required:
+              - id
+              - name
+              - plan
+              - emailIncidents
+      security:
+        - tokenAdmin: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+
   /v1/reset/client:
     post:
       summary: Reset database
