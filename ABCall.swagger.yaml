@@ -97,6 +97,230 @@ paths:
         address: "${client_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+
+  /v1/auth/employee/refresh:
+    post:
+      summary: Refresh token
+      deprecated: false
+      description: ''
+      operationId: employeeTokenRefresh
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+            required:
+              - token
+      security:
+        - tokenAdmin: []
+        - tokenUnassignedAdmin: []
+        - tokenAgent: []
+        - tokenAnalyst: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+
+  /v1/employees:
+    post:
+      summary: Create employee
+      deprecated: false
+      description: >-
+        Creates a new employee without associating it with a specific client
+        initially. Employees can be administrators, analysts, or agents. 
+
+        - If the email address is already registered, the API returns a 409 Conflict error.
+        - If the request is not valid JSON or does not meet the field requirements, a 400 Bad Request error is returned.
+      operationId: employeeCreate
+      tags: [ ]
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Name of the employee.
+              email:
+                type: string
+                description: Email of the employee.
+              password:
+                type: string
+                description: Password for the employee.
+              role:
+                type: string
+                enum:
+                  - admin
+                  - analyst
+                  - agent
+                description: Role of the employee.
+            required:
+              - name
+              - email
+              - password
+              - role
+      responses:
+        '201':
+          description: Employee created successfully
+          headers: { }
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of the employee
+              clientId:
+                type: string
+                description: ID of the associated client (can be null)
+              name:
+                type: string
+                description: Name of the employee
+              email:
+                type: string
+                description: Email of the employee
+              role:
+                type: string
+                description: Role of the employee
+            required:
+              - id
+              - name
+              - email
+              - role
+        '400':
+          description: Bad request. The request body is invalid or missing required fields.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '409':
+          description: Conflict. The email address is already registered.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+      security: [ ]
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+    get:
+      summary: List employees
+      deprecated: false
+      description: >
+        Returns the paginated list of employees from a specific Client.
+
+        - If a successful request is made, a code 200 OK is returned.
+
+        - The only page_size numbers allowed are 5, 10, and 20. If a different number is sent, a code 400 BAD REQUEST is returned.
+
+        - If a page_number less than 1 is sent, a code 400 BAD REQUEST is returned.
+
+        - If a user with a role other than Administrator sends the request, a code 403 FORBIDDEN is returned.
+
+        - If the request is sent without the authorization token, a code 401 UNAUTHORIZED is returned.
+      operationId: listEmployees
+      tags: [ ]
+      parameters:
+        - name: page_size
+          in: query
+          description: Number of employees per page (Allowed values are 5, 10, 20).
+          required: false
+          type: integer
+          default: 5
+          x-example: 10
+        - name: page_number
+          in: query
+          description: The page number to retrieve (starting at 1).
+          required: false
+          type: integer
+          default: 1
+          x-example: 2
+      responses:
+        '200':
+          description: Employees list retrieved successfully
+          headers: { }
+          schema:
+            type: object
+            properties:
+              employees:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: ID of the employee
+                    clientId:
+                      type: string
+                      description: ID of the associated client
+                    name:
+                      type: string
+                      description: Name of the employee
+                    email:
+                      type: string
+                      description: Email of the employee
+                    role:
+                      type: string
+                      description: Role of the employee
+                    invitationStatus:
+                      type: string
+                      description: Invitation status of the employee
+                    invitationDate:
+                      type: string
+                      format: date-time
+                      description: Date of the invitation
+                  required:
+                    - id
+                    - clientId
+                    - name
+                    - email
+                    - role
+                    - invitationStatus
+                    - invitationDate
+              totalPages:
+                type: integer
+                description: Total number of pages
+              currentPage:
+                type: integer
+                description: Current page number
+            required:
+              - employees
+              - totalPages
+              - currentPage
+        '400':
+          description: Bad request. Invalid page_size or page_number.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Unauthorized. Missing or invalid token.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden. User does not have access to this resource.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - tokenAdmin: [ ]
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+
   /v1/clients:
     get:
       summary: List clients
@@ -130,11 +354,67 @@ paths:
         address: "${client_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+    post:
+      summary: Create client
+      deprecated: false
+      description: ''
+      operationId: clientCreate
+      tags: []
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Name of the client
+              prefixEmailIncidents:
+                type: string
+                description: Prefix for the email to report incidents
+            required:
+              - name
+              - prefixEmailIncidents
+      responses:
+        '201':
+          description: Created
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of the client
+              name:
+                type: string
+                description: Name of the client
+              emailIncidents:
+                type: string
+                description: Email of the client where customers can report incidents
+              plan:
+                type: string
+                description: Plan of the client
+                x-nullable: true
+            required:
+              - id
+              - name
+              - emailIncidents
+              - plan
+      security:
+        - tokenUnassignedAdmin: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+
   /v1/clients/{clientId}:
     get:
       summary: Get client
       deprecated: false
-      description: Returns the the information of a client (company)
+      description: Returns information about a client (company)
       operationId: getClient
       tags: []
       parameters:
@@ -160,6 +440,11 @@ paths:
             required:
               - id
               - name
+        '400':
+          description: ''
+          headers: {}
+          schema:
+            $ref: '#/definitions/Error'
         '404':
           description: ''
           headers: {}
@@ -172,6 +457,107 @@ paths:
         address: "${client_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/clients/me:
+    get:
+      summary: Info client
+      deprecated: false
+      description: >-
+        Returns information about the client (company) of the user making the
+        request.
+      operationId: infoClient
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of the client
+              name:
+                type: string
+                description: Name of the client
+              plan:
+                type: string
+                description: Plan of the client (only for admins)
+              emailIncidents:
+                type: string
+                description: Email of the client where customers can report incidents
+            required:
+              - id
+              - name
+              - emailIncidents
+        '401':
+          description: ''
+          headers: {}
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: ''
+          headers: {}
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - tokenAdmin: []
+        - tokenUnassignedAdmin: []
+        - tokenAgent: []
+        - tokenAnalyst: []
+        - tokenUser: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+
+  /v1/clients/me/plan/{plan}:
+    post:
+      summary: Select plan
+      deprecated: false
+      description: ''
+      operationId: selectPlan
+      tags: []
+      parameters:
+        - name: plan
+          in: path
+          description: New plan (emprendedor, empresario, empresario_plus)
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of the client
+              name:
+                type: string
+                description: Name of the client
+              plan:
+                type: string
+                description: Plan of the client
+              emailIncidents:
+                type: string
+                description: Email of the client where customers can report incidents
+            required:
+              - id
+              - name
+              - plan
+              - emailIncidents
+      security:
+        - tokenAdmin: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+
   /v1/reset/client:
     post:
       summary: Reset database
@@ -201,6 +587,63 @@ paths:
               - status
       security:
         - tokenDeveloper: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/employees/me:
+    get:
+      summary: Info employee
+      deprecated: false
+      description: Returns information about the employee making the request.
+      operationId: infoEmployee
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of the employee
+              clientId:
+                type: string
+                description: ID of the associated client
+              name:
+                type: string
+                description: Name of the employee
+              email:
+                type: string
+                description: Email of the employee
+              role:
+                type: string
+                description: Role of the employee
+            required:
+              - id
+              - clientId
+              - name
+              - email
+              - role
+        '401':
+          description: ''
+          headers: {}
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: ''
+          headers: {}
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - tokenAdmin: []
+        - tokenUnassignedAdmin: []
+        - tokenAgent: []
+        - tokenAnalyst: []
       produces:
         - application/json
       x-google-backend:
@@ -479,6 +922,46 @@ securityDefinitions:
     - header: "Authorization"
       value_prefix: "Bearer "
     x-google-audiences: "developer"
+  tokenAdmin:
+    authorizationUrl: ""
+    flow: "implicit"
+    type: "oauth2"
+    x-google-issuer: "${jwt_issuer}"
+    x-google-jwks_uri: "${jwt_jwks}"
+    x-google-jwt-locations:
+    - header: "Authorization"
+      value_prefix: "Bearer "
+    x-google-audiences: "admin"
+  tokenUnassignedAdmin:
+    authorizationUrl: ""
+    flow: "implicit"
+    type: "oauth2"
+    x-google-issuer: "${jwt_issuer}"
+    x-google-jwks_uri: "${jwt_jwks}"
+    x-google-jwt-locations:
+    - header: "Authorization"
+      value_prefix: "Bearer "
+    x-google-audiences: "unassigned_admin"
+  tokenAgent:
+    authorizationUrl: ""
+    flow: "implicit"
+    type: "oauth2"
+    x-google-issuer: "${jwt_issuer}"
+    x-google-jwks_uri: "${jwt_jwks}"
+    x-google-jwt-locations:
+    - header: "Authorization"
+      value_prefix: "Bearer "
+    x-google-audiences: "agent"
+  tokenAnalyst:
+    authorizationUrl: ""
+    flow: "implicit"
+    type: "oauth2"
+    x-google-issuer: "${jwt_issuer}"
+    x-google-jwks_uri: "${jwt_jwks}"
+    x-google-jwt-locations:
+    - header: "Authorization"
+      value_prefix: "Bearer "
+    x-google-audiences: "analyst"
   tokenUser:
     authorizationUrl: ""
     flow: "implicit"
