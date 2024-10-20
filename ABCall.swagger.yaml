@@ -97,6 +97,37 @@ paths:
         address: "${client_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+
+  /v1/auth/employee/refresh:
+    post:
+      summary: Refresh token
+      deprecated: false
+      description: ''
+      operationId: employeeTokenRefresh
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+            required:
+              - token
+      security:
+        - tokenAdmin: []
+        - tokenUnassignedAdmin: []
+        - tokenAgent: []
+        - tokenAnalyst: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+
   /v1/employees:
     post:
       summary: Create employee
@@ -471,6 +502,7 @@ paths:
             $ref: '#/definitions/Error'
       security:
         - tokenAdmin: []
+        - tokenUnassignedAdmin: []
         - tokenAgent: []
         - tokenAnalyst: []
         - tokenUser: []
@@ -609,6 +641,7 @@ paths:
             $ref: '#/definitions/Error'
       security:
         - tokenAdmin: []
+        - tokenUnassignedAdmin: []
         - tokenAgent: []
         - tokenAnalyst: []
       produces:
