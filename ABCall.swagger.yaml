@@ -650,6 +650,105 @@ paths:
         address: "${client_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/employees/invite:
+    post:
+      summary: Invite employee
+      deprecated: false
+      description: >
+        Invite an employee to join an organization (Client).
+
+        - If the requester doesn't have an admin role or isn't linked to a client, the API returns a 403 Forbidden error.
+        - If the email provided isn't registered, a 404 Not Found error is returned.
+        - If the employee is already linked to another client, a 409 Conflict error is returned.
+        - If the employee is already invited, a 409 Conflict error is returned.
+        - If the operation is successful, a 201 Created response is returned.
+      operationId: inviteEmployee
+      tags: [ ]
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                description: Email of the employee to be invited.
+            required:
+              - email
+      responses:
+        '201':
+          description: Employee invited successfully.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              employee:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: ID of the employee
+                  clientId:
+                    type: string
+                    description: ID of the associated client
+                  name:
+                    type: string
+                    description: Name of the employee
+                  email:
+                    type: string
+                    description: Email of the employee
+                  role:
+                    type: string
+                    description: Role of the employee
+                  invitationStatus:
+                    type: string
+                    description: Invitation status of the employee
+                  invitationDate:
+                    type: string
+                    format: date-time
+                    description: Date of the invitation
+                required:
+                  - id
+                  - email
+                  - invitationStatus
+                  - invitationDate
+        '400':
+          description: Bad request. Invalid request body.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Unauthorized. Missing or invalid token.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden. User does not have access to this resource or must be linked to a company.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Employee not found.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '409':
+          description: Conflict. Employee is already linked to a client or already invited.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - tokenAdmin: [ ]
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+
   /v1/health/user:
     get:
       summary: Health check
