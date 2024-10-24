@@ -1155,6 +1155,59 @@ paths:
         address: "${incidentquery_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/users/me/incidents:
+    get:
+      summary: List incidents of user
+      deprecated: false
+      description: ''
+      operationId: incidentsListUser
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                channel:
+                  type: string
+                history:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      seq:
+                        type: integer
+                      date:
+                        type: string
+                      action:
+                        type: string
+                      description:
+                        type: string
+                    required:
+                      - seq
+                      - date
+                      - action
+                      - description
+              required:
+                - id
+                - name
+                - channel
+                - history
+      security:
+        - tokenUser: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${incidentquery_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
 swagger: '2.0'
 definitions:
   Error:
