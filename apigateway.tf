@@ -41,6 +41,7 @@ locals {
     client_url = "https://client-${data.google_project.default.number}.${local.region}.run.app"
     user_url = "https://user-${data.google_project.default.number}.${local.region}.run.app"
     incidentmodify_url = "https://incidentmodify-${data.google_project.default.number}.${local.region}.run.app"
+    incidentquery_url = "https://incidentquery-${data.google_project.default.number}.${local.region}.run.app"
   })
 }
 
