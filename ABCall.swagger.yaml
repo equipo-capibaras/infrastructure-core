@@ -835,7 +835,9 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       security:
-        - tokenUser: [ ]
+        - tokenUnassignedAdmin: [ ]
+        - tokenUnassignedAnalyst: [ ]
+        - tokenUnassignedAgent: [ ]
       consumes:
         - application/json
       produces:
