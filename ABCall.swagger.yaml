@@ -835,7 +835,6 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       security:
-        - tokenUnassignedAdmin: [ ]
         - tokenUnassignedAnalyst: [ ]
         - tokenUnassignedAgent: [ ]
       consumes:
@@ -1199,6 +1198,26 @@ securityDefinitions:
     - header: "Authorization"
       value_prefix: "Bearer "
     x-google-audiences: "unassigned_admin"
+  tokenUnassignedAgent:
+    authorizationUrl: ""
+    flow: "implicit"
+    type: "oauth2"
+    x-google-issuer: "${jwt_issuer}"
+    x-google-jwks_uri: "${jwt_jwks}"
+    x-google-jwt-locations:
+      - header: "Authorization"
+        value_prefix: "Bearer "
+    x-google-audiences: "unassigned_agent"
+  tokenUnassignedAnalyst:
+    authorizationUrl: ""
+    flow: "implicit"
+    type: "oauth2"
+    x-google-issuer: "${jwt_issuer}"
+    x-google-jwks_uri: "${jwt_jwks}"
+    x-google-jwt-locations:
+      - header: "Authorization"
+        value_prefix: "Bearer "
+    x-google-audiences: "unassigned_analyst"
   tokenAgent:
     authorizationUrl: ""
     flow: "implicit"
