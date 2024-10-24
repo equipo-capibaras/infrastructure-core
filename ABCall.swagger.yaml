@@ -748,6 +748,102 @@ paths:
         address: "${client_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/employees/invitation:
+    post:
+      summary: Answer an invitation
+      deprecated: false
+      description: >
+        Answer an invitation to join an organization (Client).
+
+        - If the request is sent with an outdated token, the API returns a 404 Not Found error.
+        - If the employee does not have an existing invitation, a 404 Not Found error is returned.
+        - If the invitation was already accepted previously, a 409 Conflict error is returned.
+        - If the invitation is accepted, the request will be successful, and the invitation status will be updated to "accepted".
+        - If the invitation is declined, the request will be successful, and the employee will be disassociated from the client.
+      operationId: answerInvitation
+      tags: [ ]
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              response:
+                type: string
+                description: The response to the invitation (accepted or declined).
+                enum:
+                  - accepted
+                  - declined
+            required:
+              - response
+      responses:
+        '201':
+          description: Invitation answered successfully.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              employee:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: ID of the employee
+                  clientId:
+                    type: string
+                    description: ID of the associated client (can be null if declined)
+                  name:
+                    type: string
+                    description: Name of the employee
+                  email:
+                    type: string
+                    description: Email of the employee
+                  role:
+                    type: string
+                    description: Role of the employee
+                  invitationStatus:
+                    type: string
+                    description: Invitation status of the employee
+                  invitationDate:
+                    type: string
+                    format: date-time
+                    description: Date of the invitation
+                required:
+                  - id
+                  - email
+                  - invitationStatus
+                  - invitationDate
+        '400':
+          description: Bad request. Invalid response.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Unauthorized. Missing or invalid token.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Not Found. Employee not found or no invitation to respond to.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '409':
+          description: Conflict. Invitation already accepted.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - tokenUser: [ ]
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
 
   /v1/health/user:
     get:
