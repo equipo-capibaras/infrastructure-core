@@ -1208,6 +1208,71 @@ paths:
         address: "${incidentquery_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/employees/me/incidents:
+    get:
+      summary: List incidents of agent
+      deprecated: false
+      description: ''
+      operationId: incidentsListEmployee
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              incidents:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    user:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        email:
+                          type: string
+                      required:
+                        - id
+                        - name
+                        - email
+                    filingDate:
+                      type: string
+                    status:
+                      type: string
+                  required:
+                    - id
+                    - name
+                    - user
+                    - filingDate
+                    - status
+              totalPages:
+                type: integer
+              currentPage:
+                type: integer
+              totalIncidents:
+                type: integer
+            required:
+              - incidents
+              - totalPages
+              - currentPage
+              - totalIncidents
+      security:
+        - tokenAgent: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${incidentquery_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
 swagger: '2.0'
 definitions:
   Error:
