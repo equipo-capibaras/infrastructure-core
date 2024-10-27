@@ -643,13 +643,300 @@ paths:
         - tokenAdmin: []
         - tokenUnassignedAdmin: []
         - tokenAgent: []
+        - tokenUnassignedAgent: []
         - tokenAnalyst: []
+        - tokenUnassignedAnalyst: []
       produces:
         - application/json
       x-google-backend:
         address: "${client_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/employees/invite:
+    post:
+      summary: Invite employee
+      deprecated: false
+      description: >
+        Invite an employee to join an organization (Client).
+
+        - If the requester doesn't have an admin role or isn't linked to a client, the API returns a 403 Forbidden error.
+        - If the email provided isn't registered, a 404 Not Found error is returned.
+        - If the employee is already linked to another client, a 409 Conflict error is returned.
+        - If the employee is already invited, a 409 Conflict error is returned.
+        - If the operation is successful, a 201 Created response is returned.
+      operationId: inviteEmployee
+      tags: [ ]
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                description: Email of the employee to be invited.
+            required:
+              - email
+      responses:
+        '201':
+          description: Employee invited successfully.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              employee:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: ID of the employee
+                  clientId:
+                    type: string
+                    description: ID of the associated client
+                  name:
+                    type: string
+                    description: Name of the employee
+                  email:
+                    type: string
+                    description: Email of the employee
+                  role:
+                    type: string
+                    description: Role of the employee
+                  invitationStatus:
+                    type: string
+                    description: Invitation status of the employee
+                  invitationDate:
+                    type: string
+                    format: date-time
+                    description: Date of the invitation
+                required:
+                  - id
+                  - email
+                  - invitationStatus
+                  - invitationDate
+        '400':
+          description: Bad request. Invalid request body.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Unauthorized. Missing or invalid token.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden. User does not have access to this resource or must be linked to a company.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Employee not found.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '409':
+          description: Conflict. Employee is already linked to a client or already invited.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - tokenAdmin: [ ]
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/employees/invitation:
+    post:
+      summary: Answer an invitation
+      deprecated: false
+      description: >
+        Answer an invitation to join an organization (Client).
+
+        - If the request is sent with an outdated token, the API returns a 404 Not Found error.
+        - If the employee does not have an existing invitation, a 404 Not Found error is returned.
+        - If the invitation was already accepted previously, a 409 Conflict error is returned.
+        - If the invitation is accepted, the request will be successful, and the invitation status will be updated to "accepted".
+        - If the invitation is declined, the request will be successful, and the employee will be disassociated from the client.
+      operationId: answerInvitation
+      tags: [ ]
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              response:
+                type: string
+                description: The response to the invitation (accepted or declined).
+                enum:
+                  - accepted
+                  - declined
+            required:
+              - response
+      responses:
+        '201':
+          description: Invitation answered successfully.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              employee:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: ID of the employee
+                  clientId:
+                    type: string
+                    description: ID of the associated client (can be null if declined)
+                  name:
+                    type: string
+                    description: Name of the employee
+                  email:
+                    type: string
+                    description: Email of the employee
+                  role:
+                    type: string
+                    description: Role of the employee
+                  invitationStatus:
+                    type: string
+                    description: Invitation status of the employee
+                  invitationDate:
+                    type: string
+                    format: date-time
+                    description: Date of the invitation
+                required:
+                  - id
+                  - email
+                  - invitationStatus
+                  - invitationDate
+        '400':
+          description: Bad request. Invalid response.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Unauthorized. Missing or invalid token.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Not Found. Employee not found or no invitation to respond to.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '409':
+          description: Conflict. Invitation already accepted.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - tokenUnassignedAnalyst: [ ]
+        - tokenUnassignedAgent: [ ]
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+
+  /v1/employees/detail:
+    post:
+      summary: Get employee detail
+      deprecated: false
+      description: >
+        Endpoint to get the detail of one employee by the employee´s email.
+
+        - Administrator role is required.
+        - If there is no authorization token, the API returns a 401 Unauthorized error.
+        - If the requester role is not administrator, the API returns a 403 Forbidden error.
+        - If the employee is not found, a 404 Not Found error is returned.
+        - If the operation is successful, a 200 OK response is returned.
+      operationId: getEmployeeDetail
+      tags: [ ]
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                description: Email of the employee to be retrieved.
+            required:
+              - email
+      responses:
+        '200':
+          description: Employee found successfully.
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of the employee
+              clientId:
+                type: string
+                description: ID of the associated client
+              name:
+                type: string
+                description: Name of the employee
+              email:
+                type: string
+                description: Email of the employee
+              role:
+                type: string
+                description: Role of the employee
+              invitationStatus:
+                type: string
+                description: Invitation status of the employee
+              invitationDate:
+                type: string
+                format: date-time
+                description: Date of the invitation
+            required:
+              - id
+              - email
+              - invitationStatus
+              - invitationDate
+        '400':
+          description: Bad request. Invalid request body.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Unauthorized. Missing or invalid token.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden. User does not have access to this resource.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Employee not found.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - tokenAdmin: [ ]
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+
   /v1/health/user:
     get:
       summary: Health check
@@ -899,6 +1186,218 @@ paths:
         address: "${user_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/health/incidentmodify:
+    get:
+      summary: Health check
+      deprecated: false
+      description: >-
+        This endpoint allows to check the health and availability of the
+        IncidentModify API endpoints. It returns a status code indicating the
+        health of the API.
+      operationId: healthIncidentModify
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: Status
+            required:
+              - status
+      security: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${incidentmodify_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/reset/incidentmodify:
+    post:
+      summary: Reset database
+      deprecated: false
+      description: Reset database and optionally load demo data.
+      operationId: resetIncidentModify
+      tags:
+        - testing
+      parameters:
+        - name: demo
+          in: query
+          description: Set to true to load demo data, false otherwise.
+          required: false
+          type: boolean
+          x-example: 'false'
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: status
+            required:
+              - status
+      security:
+        - tokenDeveloper: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${incidentmodify_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/health/incidentquery:
+    get:
+      summary: Health check
+      deprecated: false
+      description: >-
+        This endpoint allows to check the health and availability of the
+        IncidentQuery API endpoints. It returns a status code indicating the
+        health of the API.
+      operationId: healthIncidentQuery
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: Status
+            required:
+              - status
+      security: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${incidentquery_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/users/me/incidents:
+    get:
+      summary: List incidents of user
+      deprecated: false
+      description: ''
+      operationId: incidentsListUser
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                channel:
+                  type: string
+                history:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      seq:
+                        type: integer
+                      date:
+                        type: string
+                      action:
+                        type: string
+                      description:
+                        type: string
+                    required:
+                      - seq
+                      - date
+                      - action
+                      - description
+              required:
+                - id
+                - name
+                - channel
+                - history
+      security:
+        - tokenUser: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${incidentquery_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/employees/me/incidents:
+    get:
+      summary: List incidents of agent
+      deprecated: false
+      description: ''
+      operationId: incidentsListEmployee
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              incidents:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    user:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        email:
+                          type: string
+                      required:
+                        - id
+                        - name
+                        - email
+                    filingDate:
+                      type: string
+                    status:
+                      type: string
+                  required:
+                    - id
+                    - name
+                    - user
+                    - filingDate
+                    - status
+              totalPages:
+                type: integer
+              currentPage:
+                type: integer
+              totalIncidents:
+                type: integer
+            required:
+              - incidents
+              - totalPages
+              - currentPage
+              - totalIncidents
+      security:
+        - tokenAgent: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${incidentquery_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
 swagger: '2.0'
 definitions:
   Error:
@@ -942,6 +1441,26 @@ securityDefinitions:
     - header: "Authorization"
       value_prefix: "Bearer "
     x-google-audiences: "unassigned_admin"
+  tokenUnassignedAgent:
+    authorizationUrl: ""
+    flow: "implicit"
+    type: "oauth2"
+    x-google-issuer: "${jwt_issuer}"
+    x-google-jwks_uri: "${jwt_jwks}"
+    x-google-jwt-locations:
+      - header: "Authorization"
+        value_prefix: "Bearer "
+    x-google-audiences: "unassigned_agent"
+  tokenUnassignedAnalyst:
+    authorizationUrl: ""
+    flow: "implicit"
+    type: "oauth2"
+    x-google-issuer: "${jwt_issuer}"
+    x-google-jwks_uri: "${jwt_jwks}"
+    x-google-jwt-locations:
+      - header: "Authorization"
+        value_prefix: "Bearer "
+    x-google-audiences: "unassigned_analyst"
   tokenAgent:
     authorizationUrl: ""
     flow: "implicit"
