@@ -1214,6 +1214,40 @@ paths:
         address: "${incidentmodify_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/reset/incidentmodify:
+    post:
+      summary: Reset database
+      deprecated: false
+      description: Reset database and optionally load demo data.
+      operationId: resetIncidentModify
+      tags:
+        - testing
+      parameters:
+        - name: demo
+          in: query
+          description: Set to true to load demo data, false otherwise.
+          required: false
+          type: boolean
+          x-example: 'false'
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: status
+            required:
+              - status
+      security:
+        - tokenDeveloper: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${incidentmodify_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
   /v1/health/incidentquery:
     get:
       summary: Health check
