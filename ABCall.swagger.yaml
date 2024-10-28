@@ -120,7 +120,9 @@ paths:
         - tokenAdmin: []
         - tokenUnassignedAdmin: []
         - tokenAgent: []
+        - tokenUnassignedAgent: []
         - tokenAnalyst: []
+        - tokenUnassignedAnalyst: []
       produces:
         - application/json
       x-google-backend:
