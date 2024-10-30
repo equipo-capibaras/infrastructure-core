@@ -5,7 +5,7 @@ terraform {
     }
 
     google-beta = {
-      version = "~> 6.8.0"
+      version = "~> 6.9.0"
     }
   }
 }
