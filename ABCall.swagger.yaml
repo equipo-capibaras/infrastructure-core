@@ -1440,7 +1440,7 @@ paths:
 
         - Authentication token is required.
         - All the parameters are required.
-        - Only employees with roles as Agents or Administrators are allowed to use this endpoint.
+        - Only employees with roles as Agents are allowed to use this endpoint.
         - The employee must be part of a company (client).
         - The user registered in the email must belong to the company of the employee registering the incident.
         - The user must exist.
@@ -1510,7 +1510,6 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       security:
-        - tokenAdmin: [ ]
         - tokenAgent: [ ]
       consumes:
         - application/json
