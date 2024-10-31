@@ -1430,6 +1430,97 @@ paths:
         address: "${registroapp_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+
+  /v1/incidents/web:
+    post:
+      summary: Report an Incident (web)
+      deprecated: false
+      description: >
+        Log a user's incident using the webpage.
+
+        - Authentication token is required.
+        - All the parameters are required.
+        - Only employees with roles as Agents or Administrators are allowed to use this endpoint.
+        - The employee must be part of a company (client).
+        - The user registered in the email must belong to the company of the employee registering the incident.
+        - The user must exist.
+      operationId: reportIncidentWeb
+      tags: [ Incident ]
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                description: Email of the user associated with the incident.
+              name:
+                type: string
+                description: Title or summary of the incident.
+              description:
+                type: string
+                description: Detailed description of the incident.
+            required:
+              - email
+              - name
+              - description
+      responses:
+        '201':
+          description: Incident successfully reported.
+          schema:
+            type: object
+            properties:
+              client_id:
+                type: string
+                description: ID of the associated client.
+              name:
+                type: string
+                description: Title or summary of the incident.
+              channel:
+                type: string
+                description: Channel where the incident was reported.
+              reported_by:
+                type: string
+                description: ID of the user who reported the incident.
+              created_by:
+                type: string
+                description: ID of the employee who created the incident.
+              description:
+                type: string
+                description: Detailed description of the incident.
+        '400':
+          description: Bad request. Invalid request body.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Unauthorized. Employee does not belong to a client or user does not belong to the client's company.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden. Employee does not have the necessary access rights.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: User not found.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - tokenAdmin: [ ]
+        - tokenAgent: [ ]
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${registroapp_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+
 swagger: '2.0'
 definitions:
   Error:
