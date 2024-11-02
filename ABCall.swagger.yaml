@@ -1252,6 +1252,72 @@ paths:
         address: "${incidentmodify_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/incidents/{incidentId}/update:
+    post:
+      summary: Update incident
+      deprecated: false
+      description: ''
+      operationId: incidentUpdate
+      tags: []
+      parameters:
+        - name: incidentId
+          in: path
+          description: ''
+          required: true
+          type: string
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              action:
+                type: string
+              description:
+                type: string
+            required:
+              - action
+              - description
+      responses:
+        '201':
+          description: Created
+          schema:
+            type: object
+            properties:
+              seq:
+                type: integer
+              date:
+                type: string
+              action:
+                type: string
+              description:
+                type: string
+            required:
+              - seq
+              - date
+              - action
+              - description
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Record Not Found
+          schema:
+            $ref: '#/definitions/Error'
+        '409':
+          description: Conflict
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - tokenAgent: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${incidentmodify_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
   /v1/health/incidentquery:
     get:
       summary: Health check
