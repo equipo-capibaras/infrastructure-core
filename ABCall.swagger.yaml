@@ -506,7 +506,9 @@ paths:
         - tokenAdmin: []
         - tokenUnassignedAdmin: []
         - tokenAgent: []
+        - tokenUnassignedAgent: []
         - tokenAnalyst: []
+        - tokenUnassignedAnalyst: []
         - tokenUser: []
       produces:
         - application/json
