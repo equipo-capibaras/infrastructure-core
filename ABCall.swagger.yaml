@@ -1613,6 +1613,93 @@ paths:
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
 
+  /v1/incidents/mobile:
+    post:
+      summary: Report an Incident (mobile)
+      deprecated: false
+      description: >
+        Log a user's incident using the mobile app.
+
+        - Authentication token is required.
+        - All the parameters are required.
+        - Only users with the "USER" role are allowed to use this endpoint.
+        - The user must belong to a company (client).
+      operationId: reportIncidentMobile
+      tags: [ Incident ]
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Title or summary of the incident.
+              description:
+                type: string
+                description: Detailed description of the incident.
+            required:
+              - name
+              - description
+      responses:
+        '201':
+          description: Incident successfully reported.
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of the reported incident.
+              client_id:
+                type: string
+                description: ID of the associated client.
+              name:
+                type: string
+                description: Title or summary of the incident.
+              channel:
+                type: string
+                description: Channel where the incident was reported (e.g., MOBILE).
+              reported_by:
+                type: string
+                description: ID of the user who reported the incident.
+              created_by:
+                type: string
+                description: ID of the user who created the incident.
+              assigned_to:
+                type: string
+                description: ID of the agent assigned to the incident.
+        '400':
+          description: Bad request. Invalid request body.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Unauthorized. User does not belong to a client.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden. User does not have the necessary access rights.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: No agents available to assign the incident.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - tokenUser: [ ]
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${registroapp_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+
+
 swagger: '2.0'
 definitions:
   Error:
