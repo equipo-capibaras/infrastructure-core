@@ -120,7 +120,9 @@ paths:
         - tokenAdmin: []
         - tokenUnassignedAdmin: []
         - tokenAgent: []
+        - tokenUnassignedAgent: []
         - tokenAnalyst: []
+        - tokenUnassignedAnalyst: []
       produces:
         - application/json
       x-google-backend:
@@ -504,7 +506,9 @@ paths:
         - tokenAdmin: []
         - tokenUnassignedAdmin: []
         - tokenAgent: []
+        - tokenUnassignedAgent: []
         - tokenAnalyst: []
+        - tokenUnassignedAnalyst: []
         - tokenUser: []
       produces:
         - application/json
@@ -1250,6 +1254,72 @@ paths:
         address: "${incidentmodify_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/incidents/{incidentId}/update:
+    post:
+      summary: Update incident
+      deprecated: false
+      description: ''
+      operationId: incidentUpdate
+      tags: []
+      parameters:
+        - name: incidentId
+          in: path
+          description: ''
+          required: true
+          type: string
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              action:
+                type: string
+              description:
+                type: string
+            required:
+              - action
+              - description
+      responses:
+        '201':
+          description: Created
+          schema:
+            type: object
+            properties:
+              seq:
+                type: integer
+              date:
+                type: string
+              action:
+                type: string
+              description:
+                type: string
+            required:
+              - seq
+              - date
+              - action
+              - description
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Record Not Found
+          schema:
+            $ref: '#/definitions/Error'
+        '409':
+          description: Conflict
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - tokenAgent: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${incidentmodify_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
   /v1/health/incidentquery:
     get:
       summary: Health check
@@ -1398,6 +1468,240 @@ paths:
         address: "${incidentquery_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/incidents/{incidentId}:
+    get:
+      summary: Get incident
+      deprecated: false
+      description: ''
+      operationId: incidentGet
+      tags: []
+      parameters:
+        - name: incidentId
+          in: path
+          description: ''
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties: {}
+      security:
+        - tokenAgent: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${incidentquery_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/health/registroapp:
+    get:
+      summary: Health check
+      deprecated: false
+      description: >-
+        This endpoint allows to check the health and availability of the
+        RegistroApp API endpoints. It returns a status code indicating the
+        health of the API.
+      operationId: healthRegistroapp
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: Status
+            required:
+              - status
+      security: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${registroapp_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+
+  /v1/incidents/web:
+    post:
+      summary: Report an Incident (web)
+      deprecated: false
+      description: >
+        Log a user's incident using the webpage.
+
+        - Authentication token is required.
+        - All the parameters are required.
+        - Only employees with roles as Agents are allowed to use this endpoint.
+        - The employee must be part of a company (client).
+        - The user registered in the email must belong to the company of the employee registering the incident.
+        - The user must exist.
+      operationId: reportIncidentWeb
+      tags: [ Incident ]
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                description: Email of the user associated with the incident.
+              name:
+                type: string
+                description: Title or summary of the incident.
+              description:
+                type: string
+                description: Detailed description of the incident.
+            required:
+              - email
+              - name
+              - description
+      responses:
+        '201':
+          description: Incident successfully reported.
+          schema:
+            type: object
+            properties:
+              client_id:
+                type: string
+                description: ID of the associated client.
+              name:
+                type: string
+                description: Title or summary of the incident.
+              channel:
+                type: string
+                description: Channel where the incident was reported.
+              reported_by:
+                type: string
+                description: ID of the user who reported the incident.
+              created_by:
+                type: string
+                description: ID of the employee who created the incident.
+              description:
+                type: string
+                description: Detailed description of the incident.
+        '400':
+          description: Bad request. Invalid request body.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Unauthorized. Employee does not belong to a client or user does not belong to the client's company.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden. Employee does not have the necessary access rights.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: User not found.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - tokenAgent: [ ]
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${registroapp_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+
+  /v1/incidents/mobile:
+    post:
+      summary: Report an Incident (mobile)
+      deprecated: false
+      description: >
+        Log a user's incident using the mobile app.
+
+        - Authentication token is required.
+        - All the parameters are required.
+        - Only users with the "USER" role are allowed to use this endpoint.
+        - The user must belong to a company (client).
+      operationId: reportIncidentMobile
+      tags: [ Incident ]
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Title or summary of the incident.
+              description:
+                type: string
+                description: Detailed description of the incident.
+            required:
+              - name
+              - description
+      responses:
+        '201':
+          description: Incident successfully reported.
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of the reported incident.
+              client_id:
+                type: string
+                description: ID of the associated client.
+              name:
+                type: string
+                description: Title or summary of the incident.
+              channel:
+                type: string
+                description: Channel where the incident was reported (e.g., MOBILE).
+              reported_by:
+                type: string
+                description: ID of the user who reported the incident.
+              created_by:
+                type: string
+                description: ID of the user who created the incident.
+              assigned_to:
+                type: string
+                description: ID of the agent assigned to the incident.
+        '400':
+          description: Bad request. Invalid request body.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Unauthorized. User does not belong to a client.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden. User does not have the necessary access rights.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: No agents available to assign the incident.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - tokenUser: [ ]
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${registroapp_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+
+
 swagger: '2.0'
 definitions:
   Error:
