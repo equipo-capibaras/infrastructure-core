@@ -1839,6 +1839,71 @@ paths:
         address: "${registromail_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/health/invoice:
+    get:
+      summary: Health check
+      deprecated: false
+      description: >-
+        This endpoint allows to check the health and availability of the
+        Invoice API endpoints. It returns a status code indicating the
+        health of the API.
+      operationId: healthInvoice
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: Status
+            required:
+              - status
+      security: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${invoice_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/reset/invoice:
+    post:
+      summary: Reset database
+      deprecated: false
+      description: Reset database and optionally load demo data.
+      operationId: resetInvoice
+      tags:
+        - testing
+      parameters:
+        - name: demo
+          in: query
+          description: Set to true to load demo data, false otherwise.
+          required: false
+          type: boolean
+          x-example: false
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: status
+            required:
+              - status
+      security:
+        - tokenDeveloper: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${invoice_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
 swagger: '2.0'
 definitions:
   Error:
