@@ -1487,6 +1487,7 @@ paths:
             properties: {}
       security:
         - tokenAgent: []
+        - tokenUser: []
       produces:
         - application/json
       x-google-backend:
