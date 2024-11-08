@@ -55,3 +55,8 @@ variable "jwt_private_key" {
   type        = string
   description = "JWT private key"
 }
+
+variable "sendgrid_apikey" {
+  type        = string
+  description = "Sendgrid API key"
+}
