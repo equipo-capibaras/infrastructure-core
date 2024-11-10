@@ -506,7 +506,9 @@ paths:
         - tokenAdmin: []
         - tokenUnassignedAdmin: []
         - tokenAgent: []
+        - tokenUnassignedAgent: []
         - tokenAnalyst: []
+        - tokenUnassignedAnalyst: []
         - tokenUser: []
       produces:
         - application/json
@@ -1487,6 +1489,7 @@ paths:
             properties: {}
       security:
         - tokenAgent: []
+        - tokenUser: []
       produces:
         - application/json
       x-google-backend:
@@ -1736,6 +1739,325 @@ paths:
         path_translation: APPEND_PATH_TO_ADDRESS
 
 
+  /v1/incidents/mobile:
+    post:
+      summary: Report an Incident (mobile)
+      deprecated: false
+      description: >
+        Log a user's incident using the mobile app.
+
+        - Authentication token is required.
+        - All the parameters are required.
+        - Only users with the "USER" role are allowed to use this endpoint.
+        - The user must belong to a company (client).
+      operationId: reportIncidentMobile
+      tags: [ Incident ]
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Title or summary of the incident.
+              description:
+                type: string
+                description: Detailed description of the incident.
+            required:
+              - name
+              - description
+      responses:
+        '201':
+          description: Incident successfully reported.
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of the reported incident.
+              client_id:
+                type: string
+                description: ID of the associated client.
+              name:
+                type: string
+                description: Title or summary of the incident.
+              channel:
+                type: string
+                description: Channel where the incident was reported (e.g., MOBILE).
+              reported_by:
+                type: string
+                description: ID of the user who reported the incident.
+              created_by:
+                type: string
+                description: ID of the user who created the incident.
+              assigned_to:
+                type: string
+                description: ID of the agent assigned to the incident.
+        '400':
+          description: Bad request. Invalid request body.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Unauthorized. User does not belong to a client.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden. User does not have the necessary access rights.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: No agents available to assign the incident.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - tokenUser: [ ]
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${registroapp_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/health/registromail:
+    get:
+      summary: Health check
+      deprecated: false
+      description: >-
+        This endpoint allows to check the health and availability of the
+        RegistroMail API endpoints. It returns a status code indicating the
+        health of the API.
+      operationId: healthRegistroMail
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: Status
+            required:
+              - status
+      security: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${registromail_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/mail/receive:
+    post:
+      summary: Receive Webhook
+      deprecated: false
+      description: ''
+      operationId: mailReceive
+      tags: []
+      parameters:
+        - name: apikey
+          in: query
+          description: API key
+          required: false
+          type: string
+        - name: headers
+          in: formData
+          type: string
+          description: The raw headers of the email.
+        - name: dkim
+          in: formData
+          type: string
+          description: >-
+            A string containing the verification results of any DKIM and domain
+            keys signatures in the message.
+        - name: content-ids
+          in: formData
+          type: string
+          description: A string containing the number of attachments.
+        - name: to
+          in: formData
+          type: string
+          description: Email recipient field, as taken from the message headers.
+        - name: text
+          in: formData
+          type: string
+          description: Email body in plaintext formatting.
+        - name: html
+          in: formData
+          type: string
+          description: HTML body of email. If not set, email did not have an HTML body.
+        - name: from
+          in: formData
+          type: string
+          description: Email sender, as taken from the message headers.
+        - name: sender_ip
+          in: formData
+          type: string
+          description: A string of the sender's ip address.
+        - name: spam_report
+          in: formData
+          type: string
+          description: Spam Assassin's spam report.
+        - name: envelope
+          in: formData
+          type: string
+          description: >-
+            A string containing the SMTP envelope. This will have 2 variables:
+            to, which is a single-element array containing the address that we
+            received the email to, and from, which is the return path for the
+            message.
+        - name: attachments
+          in: formData
+          type: string
+          description: Number of attachments included in email.
+        - name: subject
+          in: formData
+          type: string
+          description: Email Subject.
+        - name: spam_score
+          in: formData
+          type: string
+          description: Spam Assassin's rating for whether or not this is spam.
+        - name: attachment-info
+          in: formData
+          type: string
+          description: >-
+            A JSON map where the keys are named attachment{X}. Each attachment
+            key points to a JSON object containing three fields, filename, type,
+            and content-id. The filename field is the name of the file (if it
+            was provided). The type field is the media type of the file. X is
+            the total number of attachments. For example, if the number of
+            attachments is 0, there will be no attachment files. If the number
+            of attachments is 3, parameters attachment1, attachment2, and
+            attachment3 will have file uploads.
+        - name: charsets
+          in: formData
+          type: string
+          description: >-
+            A string containing the character sets of the fields extracted from
+            the message.
+        - name: SPF
+          in: formData
+          type: string
+          description: >-
+            The results of the Sender Policy Framework verification of the
+            message sender and receiving IP address.
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/Error'
+      security: []
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${registromail_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/health/invoice:
+    get:
+      summary: Health check
+      deprecated: false
+      description: >-
+        This endpoint allows to check the health and availability of the
+        Invoice API endpoints. It returns a status code indicating the
+        health of the API.
+      operationId: healthInvoice
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: Status
+            required:
+              - status
+      security: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${invoice_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/reset/invoice:
+    post:
+      summary: Reset database
+      deprecated: false
+      description: Reset database and optionally load demo data.
+      operationId: resetInvoice
+      tags:
+        - testing
+      parameters:
+        - name: demo
+          in: query
+          description: Set to true to load demo data, false otherwise.
+          required: false
+          type: boolean
+          x-example: false
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: status
+            required:
+              - status
+      security:
+        - tokenDeveloper: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${invoice_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/health/notification:
+    get:
+      summary: Health check
+      deprecated: false
+      description: >-
+        This endpoint allows to check the health and availability of the
+        Notification API endpoints. It returns a status code indicating the
+        health of the API.
+      operationId: healthNotification
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: Status
+            required:
+              - status
+      security: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${notification_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
 swagger: '2.0'
 definitions:
   Error:

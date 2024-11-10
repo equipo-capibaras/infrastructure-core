@@ -10,4 +10,5 @@ locals {
   circlecitf_context_id = var.circlecitf_context_id
   domain = var.domain
   jwt_private_key = var.jwt_private_key
+  sendgrid_apikey = var.sendgrid_apikey
 }
