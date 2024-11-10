@@ -140,3 +140,15 @@ resource "google_project_iam_member" "tf_secret_access" {
   role    = "roles/secretmanager.admin"
   member  = google_service_account.circlecitf.member
 }
+
+resource "google_project_iam_member" "pubsub_admin" {
+  project = local.project_id
+  role   = "roles/pubsub.admin"
+  member = google_service_account.circleci.member
+}
+
+resource "google_project_iam_member" "tf_pubsub_admin" {
+  project = local.project_id
+  role   = "roles/pubsub.admin"
+  member = google_service_account.circlecitf.member
+}
