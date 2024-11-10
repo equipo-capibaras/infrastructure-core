@@ -1612,6 +1612,129 @@ paths:
         address: "${registroapp_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/invoice:
+    get:
+      summary: Get client invoice
+      deprecated: false
+      description: >
+        Endpoint to get a client's billing information
+        - Authentication token is required
+        - Administrator role is required to perform this action
+        - The administrator must be part of a company to perform this action
+      operationId: getInvoice
+      tags: [ ]
+      responses:
+        '200':
+          description: Invoice retrieved successfully
+          headers: { }
+          schema:
+            type: object
+            properties:
+              billing_month:
+                type: string
+                description: Billing month
+              billing_year:
+                type: integer
+                description: Billing year
+              client_id:
+                type: string
+                description: ID of the client
+              client_name:
+                type: string
+                description: Name of the client
+              due_date:
+                type: string
+                format: date-time
+                description: Due date for payment
+              client_plan:
+                type: string
+                description: Plan of the client
+              total_cost:
+                type: number
+                format: float
+                description: Total cost of the invoice
+              fixed_cost:
+                type: number
+                format: float
+                description: Fixed cost for the plan
+              total_incidents:
+                type: object
+                properties:
+                  web:
+                    type: integer
+                    description: Total number of web incidents
+                  mobile:
+                    type: integer
+                    description: Total number of mobile incidents
+                  email:
+                    type: integer
+                    description: Total number of email incidents
+              unit_cost_per_incident:
+                type: object
+                properties:
+                  web:
+                    type: number
+                    format: float
+                    description: Unit cost per web incident
+                  mobile:
+                    type: number
+                    format: float
+                    description: Unit cost per mobile incident
+                  email:
+                    type: number
+                    format: float
+                    description: Unit cost per email incident
+              total_cost_per_incident:
+                type: object
+                properties:
+                  web:
+                    type: number
+                    format: float
+                    description: Total cost for web incidents
+                  mobile:
+                    type: number
+                    format: float
+                    description: Total cost for mobile incidents
+                  email:
+                    type: number
+                    format: float
+                    description: Total cost for email incidents
+            required:
+              - billing_month
+              - billing_year
+              - client_id
+              - client_name
+              - due_date
+              - client_plan
+              - total_cost
+              - fixed_cost
+              - total_incidents
+              - unit_cost_per_incident
+              - total_cost_per_incident
+        '403':
+          description: Forbidden. User does not have access to this resource.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Client not found.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal server error. Rate could not be determined.
+          headers: { }
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - tokenAdmin: [ ]
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${invoice_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+
 
 swagger: '2.0'
 definitions:
