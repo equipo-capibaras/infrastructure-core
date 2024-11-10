@@ -43,6 +43,7 @@ locals {
     incidentmodify_url = "https://incidentmodify-${data.google_project.default.number}.${local.region}.run.app"
     incidentquery_url = "https://incidentquery-${data.google_project.default.number}.${local.region}.run.app"
     registroapp_url = "https://registroapp-${data.google_project.default.number}.${local.region}.run.app"
+    invoice_url = "https://invoice-${data.google_project.default.number}.${local.region}.run.app"
   })
 }
 
