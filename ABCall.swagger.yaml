@@ -1905,6 +1905,36 @@ paths:
         address: "${invoice_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/health/notification:
+    get:
+      summary: Health check
+      deprecated: false
+      description: >-
+        This endpoint allows to check the health and availability of the
+        Notification API endpoints. It returns a status code indicating the
+        health of the API.
+      operationId: healthNotification
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: Status
+            required:
+              - status
+      security: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${notification_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
 swagger: '2.0'
 definitions:
   Error:

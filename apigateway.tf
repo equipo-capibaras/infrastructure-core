@@ -45,6 +45,7 @@ locals {
     registroapp_url = "https://registroapp-${data.google_project.default.number}.${local.region}.run.app"
     registromail_url = "https://registromail-${data.google_project.default.number}.${local.region}.run.app"
     invoice_url = "https://invoice-${data.google_project.default.number}.${local.region}.run.app"
+    notification_url = "https://notification-${data.google_project.default.number}.${local.region}.run.app"
   })
 }
 
