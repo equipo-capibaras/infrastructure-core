@@ -2058,6 +2058,66 @@ paths:
         address: "${notification_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/health/generativeai:
+    get:
+      summary: Health check
+      deprecated: false
+      description: >-
+        This endpoint allows to check the health and availability of the
+        GenerativeAI API endpoints. It returns a status code indicating the
+        health of the API.
+      operationId: healthGenerativeAI
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: Status
+            required:
+              - status
+      security: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${generativeai_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/health/analytics:
+    get:
+      summary: Health check
+      deprecated: false
+      description: >-
+        This endpoint allows to check the health and availability of the
+        Analytics API endpoints. It returns a status code indicating the
+        health of the API.
+      operationId: healthAnalytics
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: Status
+            required:
+              - status
+      security: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${analytics_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
 swagger: '2.0'
 definitions:
   Error:

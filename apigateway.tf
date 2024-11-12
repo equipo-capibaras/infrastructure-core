@@ -46,6 +46,8 @@ locals {
     registromail_url = "https://registromail-${data.google_project.default.number}.${local.region}.run.app"
     invoice_url = "https://invoice-${data.google_project.default.number}.${local.region}.run.app"
     notification_url = "https://notification-${data.google_project.default.number}.${local.region}.run.app"
+    generativeai_url = "https://generativeai-${data.google_project.default.number}.${local.region}.run.app"
+    analytics_url = "https://analytics-${data.google_project.default.number}.${local.region}.run.app"
   })
 }
 
