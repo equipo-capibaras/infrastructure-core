@@ -158,6 +158,10 @@ resource "google_compute_url_map" "default" {
       }
 
       match_rules {
+        full_path_match =  "/logo40.png"
+      }
+
+      match_rules {
         full_path_match =  "/es-CO/favicon.ico"
       }
 
