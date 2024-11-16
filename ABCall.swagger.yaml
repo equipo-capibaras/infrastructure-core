@@ -2162,15 +2162,6 @@ paths:
                     - values
             required:
               - rows
-        '404':
-          description: No incidents found.
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-              code:
-                type: number
       security:
         - tokenAnalytics: []
       consumes:
