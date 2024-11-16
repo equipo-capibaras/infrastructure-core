@@ -2172,56 +2172,6 @@ paths:
         address: "${analytics_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
-
-  /v1/incidents/{incidentId}/generativeai/suggestions:
-  get:
-    summary: Get AI-generated suggestions for an incident
-    deprecated: false
-    description: ''
-    operationId: getAISuggestions
-    tags: []
-    parameters:
-      - name: incidentId
-        in: path
-        description: Incident ID
-        required: true
-        type: string
-      - name: locale
-        in: query
-        description: Language locale for the suggestions (e.g., 'es-CO', 'es-AR', 'pt-BR')
-        required: false
-        type: string
-        default: es-CO
-    responses:
-      '200':
-        description: Success
-        schema:
-          type: object
-          properties:
-            suggestion:
-              type: string
-              description: The AI-generated suggestion
-      '400':
-        description: Bad Request. The incident ID must be provided.
-        schema:
-          $ref: '#/definitions/Error'
-      '403':
-        description: Forbidden. User does not have access to this resource or must be linked to a company.
-        schema:
-          $ref: '#/definitions/Error'
-      '500':
-        description: Internal server error. Could not retrieve the AI suggestion.
-        schema:
-          $ref: '#/definitions/Error'
-    security:
-      - tokenAgent: []
-    produces:
-      - application/json
-    x-google-backend:
-      address: "${generativeai_url}"
-      protocol: h2
-      path_translation: APPEND_PATH_TO_ADDRESS
-
 swagger: '2.0'
 definitions:
   Error:
