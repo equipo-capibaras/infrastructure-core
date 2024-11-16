@@ -2173,6 +2173,40 @@ paths:
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
 
+  /v1/analytics/incidents/populate:
+    post:
+      summary: Populate analytics incidents tables
+      deprecated: false
+      description: 'Populate the incidents tables for analytics purposes.'
+      operationId: populateIncidents
+      tags: [ ]
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              entries:
+                type: integer
+            required:
+              - entries
+      responses:
+        '200':
+          description: Incidents populated successfully.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${analytics_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+
   /v1/incidents/{incidentId}/generativeai/suggestions:
     get:
       summary: Get AI-generated suggestions for an incident
