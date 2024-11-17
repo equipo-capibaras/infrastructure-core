@@ -2058,6 +2058,204 @@ paths:
         address: "${notification_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/health/generativeai:
+    get:
+      summary: Health check
+      deprecated: false
+      description: >-
+        This endpoint allows to check the health and availability of the
+        GenerativeAI API endpoints. It returns a status code indicating the
+        health of the API.
+      operationId: healthGenerativeAI
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: Status
+            required:
+              - status
+      security: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${generativeai_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/health/analytics:
+    get:
+      summary: Health check
+      deprecated: false
+      description: >-
+        This endpoint allows to check the health and availability of the
+        Analytics API endpoints. It returns a status code indicating the
+        health of the API.
+      operationId: healthAnalytics
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: Status
+            required:
+              - status
+      security: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${analytics_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/analytics/incidents:
+    post:
+      summary: Analytics data incidents
+      deprecated: false
+      description: ''
+      operationId: analyticsIncidents
+      tags: []
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              startDate:
+                type: string
+              endDate:
+                type: string
+              fields:
+                type: array
+                items:
+                  type: string
+            required:
+              - startDate
+              - endDate
+              - fields
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              rows:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    values:
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - values
+            required:
+              - rows
+      security:
+        - tokenAnalytics: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${analytics_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+
+  /v1/analytics/incidents/populate:
+    post:
+      summary: Populate analytics incidents tables
+      deprecated: false
+      description: 'Populate the incidents tables for analytics purposes.'
+      operationId: populateIncidents
+      tags: [ ]
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              entries:
+                type: integer
+            required:
+              - entries
+      responses:
+        '200':
+          description: Incidents populated successfully.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${analytics_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+
+  /v1/incidents/{incidentId}/generativeai/suggestions:
+    get:
+      summary: Get AI-generated suggestions for an incident
+      deprecated: false
+      description: ''
+      operationId: getAISuggestions
+      tags: []
+      parameters:
+        - name: incidentId
+          in: path
+          description: Incident ID
+          required: true
+          type: string
+        - name: locale
+          in: query
+          description: Language locale for the suggestions (e.g., 'es-CO', 'es-AR', 'pt-BR')
+          required: false
+          type: string
+          default: es-CO
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              suggestion:
+                type: string
+                description: The AI-generated suggestion
+        '400':
+          description: Bad Request. The incident ID must be provided.
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden. User does not have access to this resource or must be linked to a company.
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal server error. Could not retrieve the AI suggestion.
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - tokenAgent: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${generativeai_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+
 swagger: '2.0'
 definitions:
   Error:
@@ -2151,4 +2349,14 @@ securityDefinitions:
     - header: "Authorization"
       value_prefix: "Bearer "
     x-google-audiences: "user"
+  tokenAnalytics:
+    authorizationUrl: ""
+    flow: "implicit"
+    type: "oauth2"
+    x-google-issuer: "${jwt_issuer}"
+    x-google-jwks_uri: "${jwt_jwks}"
+    x-google-jwt-locations:
+    - header: "Authorization"
+      value_prefix: "Bearer "
+    x-google-audiences: "analytics"
 x-components: {}
