@@ -48,6 +48,7 @@ locals {
     notification_url = "https://notification-${data.google_project.default.number}.${local.region}.run.app"
     generativeai_url = "https://generativeai-${data.google_project.default.number}.${local.region}.run.app"
     analytics_url = "https://analytics-${data.google_project.default.number}.${local.region}.run.app"
+    predictiveai_url = "https://predictiveai-${data.google_project.default.number}.${local.region}.run.app"
   })
 }
 
