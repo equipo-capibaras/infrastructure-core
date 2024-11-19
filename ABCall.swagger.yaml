@@ -2172,6 +2172,60 @@ paths:
         address: "${analytics_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/analytics/users:
+    post:
+      summary: Analytics data users
+      deprecated: false
+      description: ''
+      operationId: analyticsUsers
+      tags: []
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              startDate:
+                type: string
+              endDate:
+                type: string
+              fields:
+                type: array
+                items:
+                  type: string
+            required:
+              - startDate
+              - endDate
+              - fields
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              rows:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    values:
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - values
+            required:
+              - rows
+      security:
+        - tokenAnalytics: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${analytics_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
 
   /v1/analytics/incidents/populate:
     post:
