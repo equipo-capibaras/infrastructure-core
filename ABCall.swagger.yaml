@@ -129,6 +129,33 @@ paths:
         address: "${client_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/auth/employee/analytics:
+    post:
+      summary: Analytics token
+      deprecated: false
+      description: ''
+      operationId: employeeTokenAnalytics
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+            required:
+              - token
+      security:
+        - tokenAdmin: []
+        - tokenAnalyst: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
 
   /v1/employees:
     post:
