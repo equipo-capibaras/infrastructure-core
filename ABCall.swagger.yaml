@@ -2366,6 +2366,35 @@ paths:
         address: "${predictiveai_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/reset/analytics:
+    post:
+      summary: Reset database
+      deprecated: false
+      description: Reset database
+      operationId: resetAnalytics
+      tags:
+        - testing
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: status
+            required:
+              - status
+      security:
+        - tokenDeveloper: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${analytics_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
 swagger: '2.0'
 definitions:
   Error:
