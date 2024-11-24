@@ -129,6 +129,33 @@ paths:
         address: "${client_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/auth/employee/analytics:
+    post:
+      summary: Analytics token
+      deprecated: false
+      description: ''
+      operationId: employeeTokenAnalytics
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+            required:
+              - token
+      security:
+        - tokenAdmin: []
+        - tokenAnalyst: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${client_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
 
   /v1/employees:
     post:
@@ -2172,6 +2199,60 @@ paths:
         address: "${analytics_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/analytics/users:
+    post:
+      summary: Analytics data users
+      deprecated: false
+      description: ''
+      operationId: analyticsUsers
+      tags: []
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              startDate:
+                type: string
+              endDate:
+                type: string
+              fields:
+                type: array
+                items:
+                  type: string
+            required:
+              - startDate
+              - endDate
+              - fields
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              rows:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    values:
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - values
+            required:
+              - rows
+      security:
+        - tokenAnalytics: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${analytics_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
 
   /v1/analytics/incidents/populate:
     post:
@@ -2255,7 +2336,65 @@ paths:
         address: "${generativeai_url}"
         protocol: h2
         path_translation: APPEND_PATH_TO_ADDRESS
-
+  /v1/health/predictiveai:
+    get:
+      summary: Health check
+      deprecated: false
+      description: >-
+        This endpoint allows to check the health and availability of the
+        PredictiveAI API endpoints. It returns a status code indicating the
+        health of the API.
+      operationId: healthPredictiveAI
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: Status
+            required:
+              - status
+      security: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${predictiveai_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /v1/reset/analytics:
+    post:
+      summary: Reset database
+      deprecated: false
+      description: Reset database
+      operationId: resetAnalytics
+      tags:
+        - testing
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: status
+            required:
+              - status
+      security:
+        - tokenDeveloper: []
+      produces:
+        - application/json
+      x-google-backend:
+        address: "${analytics_url}"
+        protocol: h2
+        path_translation: APPEND_PATH_TO_ADDRESS
 swagger: '2.0'
 definitions:
   Error:
